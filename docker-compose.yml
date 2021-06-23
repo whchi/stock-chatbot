@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  ### Laravel ######################################################
+  app:
+    image: local_chatbot
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:80"
+      - "2222:22"
+    volumes:
+      - ./:/app
+    command: ["tail", "-f", "/dev/null"]

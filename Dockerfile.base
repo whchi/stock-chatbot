@@ -1,0 +1,27 @@
+FROM golang:1.16.5-buster
+
+ENV CHROMEDRIVER_VERSION=91.0.4472.101
+
+WORKDIR /installing
+
+RUN apt -y update && apt -y upgrade
+RUN apt install bash git make unzip python-pip -y
+RUN pip install selenium chromedriver
+# chrome
+RUN apt install gconf-service libasound2 libgconf-2-4 libgtk-3-0 libnspr4 \
+			libxtst6 fonts-liberation libnss3 lsb-release xdg-utils libxss1 \
+			libappindicator1 libindicator7 udev libvulkan1 libu2f-udev libwayland-server0 libgbm1 -y
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+RUN dpkg -i google-chrome*.deb
+
+# chrome driver
+RUN wget https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip
+RUN unzip chromedriver_linux64.zip
+RUN chmod +x chromedriver
+RUN mv -f chromedriver /opt/chromedriver
+RUN ln -s /opt/chromedriver /usr/bin/chromedriver
+
+RUN rm google-chrome*.deb
+RUN rm chromedriver_linux*.zip
+
+WORKDIR /app

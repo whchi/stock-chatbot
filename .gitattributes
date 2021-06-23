@@ -1,0 +1,6 @@
+*.go text
+*.html text
+*.dockerignore text
+Dockerfile text
+*.json text
+*.conf text
