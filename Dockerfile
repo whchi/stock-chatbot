@@ -13,4 +13,4 @@ RUN go build -o bin/webapp cmd/line/main.go
 
 EXPOSE 8080
 
-ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

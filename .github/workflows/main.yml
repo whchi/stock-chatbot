@@ -16,7 +16,6 @@ jobs:
           heroku_app_name: "secret-headland-33993" #Must be unique in Heroku
           heroku_email: "whccchi@gmail.com"
           usedocker: true
-          healthcheck: true
         env:
           GSHEET_API_URL: ${{secrets.GSHEET_API_URL}}
           LINE_CHANNEL_SECRET: ${{secrets.LINE_CHANNEL_SECRET}}
