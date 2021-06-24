@@ -25,10 +25,13 @@ var ServerSetting = &Server{}
 var LineSetting = &Line{}
 
 func Setup() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("setting.Setup, fail to get .env: %v", err)
+	if os.Getenv("APP_ENV") != "production" {
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatalf("setting.Setup, fail to get .env: %v", err)
+		}
 	}
+
 	ServerSetting.RunMode = os.Getenv("RUN_MODE")
 	LineSetting.ACCESS_TOKEN = os.Getenv("LINE_CHANNEL_ACCESS_TOKEN")
 	LineSetting.SECRET = os.Getenv("LINE_CHANNEL_SECRET")
