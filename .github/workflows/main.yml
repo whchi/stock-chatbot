@@ -22,3 +22,4 @@ jobs:
           LINE_CHANNEL_ACCESS_TOKEN: ${{secrets.LINE_CHANNEL_ACCESS_TOKEN}}
           RUN_MODE: "release"
           PORT: 8080
+          APP_ENV: "production"
