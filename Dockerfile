@@ -8,7 +8,7 @@ WORKDIR /app
 
 COPY . /app
 
-RUN groupadd -r appuser && useradd --no-log-init -r -g appuser appuser
+RUN groupadd -r appuser && useradd -r -g appuser appuser
 RUN go build -o bin/crawler cmd/crawler/main.go
 RUN go build -o bin/webapp cmd/line/main.go
 
