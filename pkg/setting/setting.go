@@ -9,6 +9,7 @@ import (
 
 type Server struct {
 	RunMode string
+	PORT	string
 }
 
 type Line struct {
@@ -32,6 +33,7 @@ func Setup() {
 		}
 	}
 
+	ServerSetting.PORT = os.Getenv("PORT")
 	ServerSetting.RunMode = os.Getenv("RUN_MODE")
 	LineSetting.ACCESS_TOKEN = os.Getenv("LINE_CHANNEL_ACCESS_TOKEN")
 	LineSetting.SECRET = os.Getenv("LINE_CHANNEL_SECRET")

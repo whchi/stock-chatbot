@@ -12,6 +12,6 @@ RUN groupadd -r appuser && useradd -r -g appuser appuser
 RUN go build -o bin/crawler cmd/crawler/main.go
 RUN go build -o bin/webapp cmd/line/main.go
 
-EXPOSE 8080
+EXPOSE 8080/tcp
 
 CMD ["/app/bin/webapp"]
