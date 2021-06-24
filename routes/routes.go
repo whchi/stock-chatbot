@@ -1,6 +1,8 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/whchi/stock-chatbot/routes/api"
 )
@@ -12,6 +14,8 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Recovery())
 
 	r.POST("/line/callback", api.LineEventHandler)
-
+	r.GET("/", func(c *gin.Context){
+		c.String(http.StatusOK, "Hello World!")
+	})
 	return r
 }

@@ -13,6 +13,12 @@ jobs:
       - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "intense-reaches-81538" #Must be unique in Heroku
+          heroku_app_name: "secret-headland-33993" #Must be unique in Heroku
           heroku_email: "whccchi@gmail.com"
           usedocker: true
+          healthcheck: true
+        env:
+          GSHEET_API_URL: ${{secrets.GSHEET_API_URL}}
+          LINE_CHANNEL_SECRET: ${{secrets.LINE_CHANNEL_SECRET}}
+          LINE_CHANNEL_ACCESS_TOKEN: ${{secrets.LINE_CHANNEL_ACCESS_TOKEN}}
+          RUN_MODE: "release"
