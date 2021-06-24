@@ -1,6 +1,6 @@
 FROM whcdc/golang1.16-selenium-chrome
 
-RUN apt install -y supervisor
+# RUN apt install -y supervisor
 
 COPY deployments/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
@@ -14,4 +14,4 @@ RUN go build -o bin/webapp cmd/line/main.go
 
 EXPOSE 8080
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/app/bin/webapp"]
