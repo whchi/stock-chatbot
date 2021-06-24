@@ -11,5 +11,5 @@ go mod tidy
 # cmd
 * fetch data (in container)
 ```sh
-go run chatbot/cmd/crawler
+go run cmd/crawler/main.go
 ```

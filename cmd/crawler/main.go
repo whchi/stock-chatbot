@@ -9,7 +9,6 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 
@@ -18,21 +17,21 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/chromedp"
-	"github.com/joho/godotenv"
+	"github.com/whchi/stock-chatbot/pkg/setting"
 )
 
 var listedData map[string]interface{}
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-	url := os.Getenv("GSHEET_API_URL") + "?tab=punishing_stocks"
+	setting.Setup()
+	url := setting.OtherSetting.GSHEET_API_URL + "?tab=punishing_stocks"
 	listed := GetListed()
+	log.Println("get listed data done")
 	otc := GetOTC()
+	log.Println("get otc data done")
 	toDb := append(listed, otc...)
 	SaveToSheet(url, toDb)
+	log.Print("sheet data updated")
 }
 
 type OtcPrev struct {
@@ -75,11 +74,11 @@ func GetOTC() (toDb []map[string]string) {
 		var name string
 		var punish_count string
 		if s.Find("td").Length() == 8 {
-			code = s.Find("td:nth-child(3)").Text()
+			code = "'" + s.Find("td:nth-child(3)").Text()
 			prev.code = code
 			name = s.Find("td:nth-child(4)").Text()
 			prev.name = name
-			punish_count = s.Find("td:nth-child(5)").Text()
+			punish_count = "'" + s.Find("td:nth-child(5)").Text()
 			prev.punish_count = punish_count
 		}
 		announceDateAt := 2
@@ -142,7 +141,7 @@ func GetListed() (result []map[string]string) {
 		for idx, row := range v {
 			j := 0
 			if r, yes := row.([]interface{}); yes {
-				for i, _ := range r {
+				for i := range r {
 					if i > 0 && i < 7 {
 						rec := fmt.Sprintf("%v", r[i])
 						rows[idx][j] = rec
@@ -158,13 +157,13 @@ func GetListed() (result []map[string]string) {
 		toDb[i] = make(map[string]string, 7)
 	}
 	for i := 0; i < total; i++ {
-		toDb[i]["announce_date"] = rows[i][0] + "T00:00:00+08:00"
-		toDb[i]["code"] = rows[i][1]
+		toDb[i]["announce_date"] = convertToEra(rows[i][0]) + "T00:00:00+08:00"
+		toDb[i]["code"] = "'" + rows[i][1]
 		toDb[i]["name"] = rows[i][2]
-		toDb[i]["punish_count"] = rows[i][3]
+		toDb[i]["punish_count"] = "'" + rows[i][3]
 		interval := strings.Split(rows[i][5], "～")
-		toDb[i]["begin"] = interval[0] + "T00:00:00+08:00"
-		toDb[i]["end"] = interval[1] + "T23:59:59+08:00"
+		toDb[i]["begin"] = convertToEra(interval[0]) + "T00:00:00+08:00"
+		toDb[i]["end"] = convertToEra(interval[1]) + "T23:59:59+08:00"
 	}
 
 	return toDb

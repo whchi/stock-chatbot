@@ -1,15 +1,14 @@
 version: "3.8"
 
 services:
-  ### Laravel ######################################################
   app:
-    image: local_chatbot
+    image: whcdc/golang1.16-selenium-chrome
+    working_dir: /app
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.base
     ports:
-      - "8000:80"
-      - "2222:22"
+      - 8080:8080
     volumes:
       - ./:/app
     command: ["tail", "-f", "/dev/null"]

@@ -23,5 +23,3 @@ RUN ln -s /opt/chromedriver /usr/bin/chromedriver
 
 RUN rm google-chrome*.deb
 RUN rm chromedriver_linux*.zip
-
-WORKDIR /app
