@@ -12,7 +12,7 @@ func main() {
 	setting.Setup()
 	gin.SetMode(setting.ServerSetting.RunMode)
 	routersInit := routes.InitRouter()
-	endPoint := ":8080"
+	endPoint := "0.0.0.0:8080"
 	maxHeaderBytes := 1 << 20
 	server := &http.Server{
 		Addr:           endPoint,
