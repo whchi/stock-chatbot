@@ -29,23 +29,19 @@ func LineEventHandler(c *gin.Context) {
 		case linebot.EventTypeMessage:
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
-				quota, err := Bot.GetMessageQuota().Do()
-				if err != nil {
-					log.Println("Quota err:", err)
-				}
-				log.Println("quota: " + strconv.FormatInt(quota.Value, 10))
 				if strings.HasPrefix(message.Text, "/") {
-					if myCache.Exists() {
+					if !myCache.IsExpired() {
 						stocks = myCache.GetStocks()
 					} else {
 						stocks = gsheet.FetchData()
+						myCache.SyncWithRaw(stocks)
 					}
 					text := message.Text
 					replyMsg := template(stocks, text[1:])
 					if replyMsg == "" {
 						replyMsg = "查無結果"
 					}
-					if _, err = Bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(replyMsg)).Do(); err != nil {
+					if _, err := Bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(replyMsg)).Do(); err != nil {
 						log.Panic(err)
 					}
 				} else {
