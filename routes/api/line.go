@@ -90,9 +90,8 @@ func template(data []map[string]string, msg string) (result string) {
 			if data[i][searchKey] == msg {
 				bgn := data[i]["begin"][0:10]
 				end := data[i]["end"][0:10]
-				ret += fmt.Sprintf("代號: %s, 名稱: %s, 處置期間: %s~%s",
+				ret += fmt.Sprintf("代號: %s, 名稱: %s, 處置期間: %s~%s\n",
 					data[i]["code"], data[i]["name"], bgn, end)
-				break
 			}
 		}
 	}
