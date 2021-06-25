@@ -26,7 +26,7 @@ var ServerSetting = &Server{}
 var LineSetting = &Line{}
 
 func Setup() {
-	if os.Getenv("APP_ENV") != "production" {
+	if os.Getenv("RUN_MODE") != "release" {
 		err := godotenv.Load()
 		if err != nil {
 			log.Fatalf("setting.Setup, fail to get .env: %v", err)

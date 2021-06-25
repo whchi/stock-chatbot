@@ -32,10 +32,10 @@ func LineEventHandler(c *gin.Context) {
 					log.Println("Quota err:", err)
 				}
 				log.Println("quota: " + strconv.FormatInt(quota.Value, 10))
-				if strings.HasPrefix(message.Text, "ps") {
+				if strings.HasPrefix(message.Text, "/") {
 					stocks := gsheet.FetchData()
 					text := message.Text
-					replyMsg := template(stocks, text[2:])
+					replyMsg := template(stocks, text[1:])
 					if replyMsg == "" {
 						replyMsg = "查無結果"
 					}
@@ -62,15 +62,22 @@ func LineEventHandler(c *gin.Context) {
 
 func template(data []map[string]string, msg string) (result string) {
 	var ret string
+
+	msg = strings.Trim(msg, " \n")
 	dataLen := len(data)
-	if msg == "list" {
+
+	switch msg {
+	case "help":
+		ret = "* /list：列出所有處置\n* /股票代碼 or /股票名稱：列出單支股票"
+	case "list":
 		for i := 0; i < dataLen; i++ {
 			bgn := data[i]["begin"][0:10]
 			end := data[i]["end"][0:10]
-			ret += fmt.Sprintf("\n代號: %s, 名稱: %s, 處置期間: %s~%s",
+			ret += fmt.Sprintf("代號: %s, 名稱: %s, 處置期間: %s~%s\n",
 				data[i]["code"], data[i]["name"], bgn, end)
 		}
-	} else {
+		ret = ret[:len(ret)-1]
+	default:
 		validCode := regexp.MustCompile(`^\d{4,}$`)
 		searchKey := "name"
 		if validCode.MatchString(msg) {
