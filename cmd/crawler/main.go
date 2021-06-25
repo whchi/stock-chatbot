@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
 	"strings"
 	"time"
 
@@ -41,20 +40,6 @@ type OtcPrev struct {
 }
 
 func GetOTC() (toDb []map[string]string) {
-	t := time.Now()
-	startDate := t.Format("2006/01/02")
-	endDate := t.AddDate(0, 0, 1).Format("2006/01/02")
-
-	payload := url.Values{}
-	payload.Set("input_date_Start", string(startDate))
-	payload.Set("input_date_End", string(endDate))
-	payload.Set("Submit", "查詢")
-	payload.Set("choice_type", "all_category")
-	payload.Set("group_type", "group_stk")
-	payload.Set("disposal_reason", "-1")
-	payload.Set("disposal_measure", "-1")
-	payload.Set("stk_code", "")
-	payload.Set("stk_cotegory", "-1")
 	url := "https://www.tpex.org.tw/web/bulletin/disposal_information/disposal_information.php?l=zh-tw"
 	rawHtml := SeleniumFetch(url)
 	doc, err := goquery.NewDocumentFromReader(strings.NewReader(rawHtml))
@@ -170,7 +155,15 @@ func GetListed() (result []map[string]string) {
 }
 
 func SeleniumFetch(url string) (result string) {
-	ctx, cancel := chromedp.NewContext(context.Background())
+	opts := []chromedp.ExecAllocatorOption{
+        chromedp.NoFirstRun,
+        chromedp.NoDefaultBrowserCheck,
+        chromedp.Headless,
+        chromedp.DisableGPU,
+		chromedp.NoSandbox,
+    }
+	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...); defer cancel()
+	ctx, cancel := chromedp.NewContext(allocCtx)
 	defer cancel()
 
 	var htmlContent string
