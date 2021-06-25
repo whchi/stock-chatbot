@@ -16,13 +16,16 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/chromedp"
+	myCache "github.com/whchi/stock-chatbot/pkg/cache"
 	"github.com/whchi/stock-chatbot/pkg/setting"
 )
 
 var listedData map[string]interface{}
 
-func main() {
+func init() {
 	setting.Setup()
+}
+func main() {
 	url := setting.OtherSetting.GSHEET_API_URL + "?tab=punishing_stocks"
 	listed := GetListed()
 	log.Println("get listed data done")
@@ -156,13 +159,14 @@ func GetListed() (result []map[string]string) {
 
 func SeleniumFetch(url string) (result string) {
 	opts := []chromedp.ExecAllocatorOption{
-        chromedp.NoFirstRun,
-        chromedp.NoDefaultBrowserCheck,
-        chromedp.Headless,
-        chromedp.DisableGPU,
+		chromedp.NoFirstRun,
+		chromedp.NoDefaultBrowserCheck,
+		chromedp.Headless,
+		chromedp.DisableGPU,
 		chromedp.NoSandbox,
-    }
-	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...); defer cancel()
+	}
+	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(), opts...)
+	defer cancel()
 	ctx, cancel := chromedp.NewContext(allocCtx)
 	defer cancel()
 
@@ -210,6 +214,7 @@ func SaveToSheet(url string, data []map[string]string) bool {
 		if err != nil {
 			log.Fatalln(err)
 		}
+		myCache.Sync(payload)
 		return true
 	}
 	return false

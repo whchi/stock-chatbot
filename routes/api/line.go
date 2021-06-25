@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/line/line-bot-sdk-go/v7/linebot"
+	myCache "github.com/whchi/stock-chatbot/pkg/cache"
 	"github.com/whchi/stock-chatbot/pkg/gsheet"
 	linebotInstance "github.com/whchi/stock-chatbot/pkg/linebot"
 )
@@ -21,6 +22,7 @@ func LineEventHandler(c *gin.Context) {
 	}
 	var Bot = linebotInstance.Setup()
 	events, _ := Bot.ParseRequest(c.Request)
+	var stocks []map[string]string
 	for _, event := range events {
 		log.Print(event.Type)
 		switch event.Type {
@@ -33,7 +35,11 @@ func LineEventHandler(c *gin.Context) {
 				}
 				log.Println("quota: " + strconv.FormatInt(quota.Value, 10))
 				if strings.HasPrefix(message.Text, "/") {
-					stocks := gsheet.FetchData()
+					if myCache.Exists() {
+						stocks = myCache.GetStocks()
+					} else {
+						stocks = gsheet.FetchData()
+					}
 					text := message.Text
 					replyMsg := template(stocks, text[1:])
 					if replyMsg == "" {

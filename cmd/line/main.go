@@ -8,8 +8,11 @@ import (
 	"github.com/whchi/stock-chatbot/routes"
 )
 
-func main() {
+func init() {
 	setting.Setup()
+}
+
+func main() {
 	gin.SetMode(setting.ServerSetting.RunMode)
 	routersInit := routes.InitRouter()
 	endPoint := "0.0.0.0:" + setting.ServerSetting.PORT

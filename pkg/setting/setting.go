@@ -9,7 +9,7 @@ import (
 
 type Server struct {
 	RunMode string
-	PORT	string
+	PORT    string
 }
 
 type Line struct {
