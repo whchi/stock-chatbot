@@ -16,6 +16,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/chromedp"
+	"github.com/whchi/stock-chatbot/pkg/cache"
 	"github.com/whchi/stock-chatbot/pkg/setting"
 )
 
@@ -213,6 +214,7 @@ func SaveToSheet(url string, data []map[string]string) bool {
 		if err != nil {
 			log.Fatalln(err)
 		}
+		cache.Sync(payload)
 		return true
 	}
 	return false

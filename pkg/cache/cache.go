@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-func sync(data []byte) {
+func Sync(data []byte) {
 	err := ioutil.WriteFile("data/stocks.json", data, 0644)
 	if err != nil {
 		log.Fatalln(err)
@@ -28,7 +28,7 @@ func IsExpired() (exists bool) {
 
 func SyncWithRaw(data []map[string]string) {
 	if payload, err := json.Marshal(data); err == nil {
-		sync(payload)
+		Sync(payload)
 	}
 }
 

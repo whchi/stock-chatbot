@@ -11,7 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/line/line-bot-sdk-go/v7/linebot"
-	myCache "github.com/whchi/stock-chatbot/pkg/cache"
+	"github.com/whchi/stock-chatbot/pkg/cache"
 	"github.com/whchi/stock-chatbot/pkg/gsheet"
 	linebotInstance "github.com/whchi/stock-chatbot/pkg/linebot"
 )
@@ -30,11 +30,11 @@ func LineEventHandler(c *gin.Context) {
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
 				if strings.HasPrefix(message.Text, "/") {
-					if !myCache.IsExpired() {
-						stocks = myCache.GetStocks()
+					if !cache.IsExpired() {
+						stocks = cache.GetStocks()
 					} else {
 						stocks = gsheet.FetchData()
-						myCache.SyncWithRaw(stocks)
+						cache.SyncWithRaw(stocks)
 					}
 					text := message.Text
 					replyMsg := template(stocks, text[1:])
