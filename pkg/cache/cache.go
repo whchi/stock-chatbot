@@ -8,15 +8,15 @@ import (
 	"time"
 )
 
-func Sync(data []byte) {
-	err := ioutil.WriteFile("data/stocks.json", data, 0644)
+func Sync(data []byte, fileName string) {
+	err := ioutil.WriteFile("data/"+fileName, data, 0644)
 	if err != nil {
 		log.Fatalln(err)
 	}
 }
 
-func IsExpired() (exists bool) {
-	jsonFile, err := os.Stat("data/stocks.json")
+func IsExpired(fileName string) (exists bool) {
+	jsonFile, err := os.Stat("data/" + fileName)
 	if err != nil {
 		return true
 	}
@@ -26,14 +26,14 @@ func IsExpired() (exists bool) {
 	return execAt-lastModifiedAt > 86400
 }
 
-func SyncWithRaw(data []map[string]string) {
+func SyncWithRaw(data []map[string]string, fileName string) {
 	if payload, err := json.Marshal(data); err == nil {
-		Sync(payload)
+		Sync(payload, fileName)
 	}
 }
 
-func GetStocks() (data []map[string]string) {
-	jsonFile, err := os.Open("data/stocks.json")
+func GetStocks(fileName string) (data []map[string]string) {
+	jsonFile, err := os.Open("data/" + fileName)
 	if err != nil {
 		log.Fatalln(err)
 	}
