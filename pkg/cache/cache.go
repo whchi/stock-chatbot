@@ -48,3 +48,13 @@ func GetStocks(fileName string) (data []map[string]string) {
 
 	return jsonData
 }
+
+func Flush() {
+	files, _ := ioutil.ReadDir("data")
+	for _, f := range files {
+		if f.Name() == ".gitkeep" {
+			continue
+		}
+		os.Remove("data/" + f.Name())
+	}
+}

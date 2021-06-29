@@ -108,7 +108,7 @@ func LineEventHandler(c *gin.Context) {
 }
 
 func template(data []map[string]string, msg string, fileName string) (result string) {
-	var ret string = "查無結果"
+	var ret string
 
 	msg = strings.Trim(msg, " \n")
 	dataLen := len(data)
@@ -151,5 +151,8 @@ func template(data []map[string]string, msg string, fileName string) (result str
 		}
 	}
 
+	if ret == "" {
+		ret = "查無結果"
+	}
 	return ret
 }
