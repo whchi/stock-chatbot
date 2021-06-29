@@ -2,6 +2,7 @@ package cache
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -52,6 +53,7 @@ func GetStocks(fileName string) (data []map[string]string) {
 func Flush() {
 	files, _ := ioutil.ReadDir("data")
 	for _, f := range files {
+		fmt.Println(f.Name())
 		if f.Name() == ".gitkeep" {
 			continue
 		}
