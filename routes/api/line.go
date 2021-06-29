@@ -29,6 +29,13 @@ func LineEventHandler(c *gin.Context) {
 		case linebot.EventTypeMessage:
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
+				if message.Text == "how do you turn this on" {
+					cache.Flush()
+					if _, err := Bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("嗚痾")).Do(); err != nil {
+						log.Panic(err)
+					}
+					return
+				}
 				if strings.HasPrefix(message.Text, "/") {
 					fileName := "punishing_stocks.json"
 					if !cache.IsExpired(fileName) {
