@@ -41,7 +41,7 @@ func LineEventHandler(c *gin.Context) {
 					if !cache.IsExpired(fileName) {
 						stocks = cache.GetStocks(fileName)
 					} else {
-						stocks = gsheet.FetchData()
+						stocks = gsheet.FetchData("punishing_stocks")
 						cache.SyncWithRaw(stocks, fileName)
 					}
 					text := message.Text
@@ -61,27 +61,7 @@ func LineEventHandler(c *gin.Context) {
 					if !cache.IsExpired(fileName) {
 						stocks = cache.GetStocks(fileName)
 					} else {
-						stocks = gsheet.FetchData()
-						cache.SyncWithRaw(stocks, fileName)
-					}
-					text := message.Text
-					search := text[1:]
-					if len(search) == 0 {
-						if _, err := Bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("打字好ㄇ")).Do(); err != nil {
-							log.Panic(err)
-						}
-						return
-					}
-					replyMsg := template(stocks, search, fileName)
-					if _, err := Bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(replyMsg)).Do(); err != nil {
-						log.Panic(err)
-					}
-				} else if strings.HasPrefix(message.Text, "!") {
-					fileName := "notice_stocks.json"
-					if !cache.IsExpired(fileName) {
-						stocks = cache.GetStocks(fileName)
-					} else {
-						stocks = gsheet.FetchData()
+						stocks = gsheet.FetchData("notice_stocks")
 						cache.SyncWithRaw(stocks, fileName)
 					}
 					text := message.Text
@@ -131,7 +111,7 @@ func template(data []map[string]string, msg string, fileName string) (result str
 				bgn := data[i]["begin"][0:10]
 				end := data[i]["end"][0:10]
 				ret += fmt.Sprintf("代號: %s, 名稱: %s, 處置期間: %s~%s\n",
-					data[i]["code"][1:], data[i]["name"], bgn, end)
+					data[i]["code"], data[i]["name"], bgn, end)
 			}
 			ret = ret[:len(ret)-1]
 		}
@@ -140,18 +120,17 @@ func template(data []map[string]string, msg string, fileName string) (result str
 		searchKey := "name"
 		if validCode.MatchString(msg) {
 			searchKey = "code"
-			msg = "'" + msg
 		}
 		for i := 0; i < dataLen; i++ {
 			if data[i][searchKey] == msg {
 				if fileName != "punishing_stocks.json" {
 					ret += fmt.Sprintf("-----\n代號: %s\n名稱: %s\n理由: %s\n,宣布日期: %s\n",
-						data[i]["code"][1:], data[i]["name"], data[i]["desc"], data[i]["announce_date"])
+						data[i]["code"], data[i]["name"], data[i]["desc"], data[i]["announce_date"])
 				} else {
 					bgn := data[i]["begin"][0:10]
 					end := data[i]["end"][0:10]
 					ret += fmt.Sprintf("代號: %s, 名稱: %s, 處置期間: %s~%s\n",
-						data[i]["code"][1:], data[i]["name"], bgn, end)
+						data[i]["code"], data[i]["name"], bgn, end)
 				}
 			}
 		}

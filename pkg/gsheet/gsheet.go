@@ -11,8 +11,8 @@ import (
 
 var r []map[string]string
 
-func FetchData() (result []map[string]string) {
-	url := setting.OtherSetting.GSHEET_API_URL + "?tab=punishing_stocks"
+func FetchData(tab string) (result []map[string]string) {
+	url := setting.OtherSetting.GSHEET_API_URL + "?tab=" + tab
 	client := http.DefaultClient
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
