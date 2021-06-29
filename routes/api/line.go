@@ -30,17 +30,45 @@ func LineEventHandler(c *gin.Context) {
 			switch message := event.Message.(type) {
 			case *linebot.TextMessage:
 				if strings.HasPrefix(message.Text, "/") {
-					if !cache.IsExpired() {
-						stocks = cache.GetStocks()
+					fileName := "punishing_stocks.json"
+					if !cache.IsExpired(fileName) {
+						stocks = cache.GetStocks(fileName)
 					} else {
 						stocks = gsheet.FetchData()
-						cache.SyncWithRaw(stocks)
+						cache.SyncWithRaw(stocks, fileName)
 					}
 					text := message.Text
-					replyMsg := template(stocks, text[1:])
+					search := text[1:]
+					if len(search) == 0 {
+						if _, err := Bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("打字好ㄇ")).Do(); err != nil {
+							log.Panic(err)
+						}
+						return
+					}
+					replyMsg := template(stocks, search, fileName)
 					if replyMsg == "" {
 						replyMsg = "查無結果"
 					}
+					if _, err := Bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(replyMsg)).Do(); err != nil {
+						log.Panic(err)
+					}
+				} else if strings.HasPrefix(message.Text, "!") {
+					fileName := "notice_stocks.json"
+					if !cache.IsExpired(fileName) {
+						stocks = cache.GetStocks(fileName)
+					} else {
+						stocks = gsheet.FetchData()
+						cache.SyncWithRaw(stocks, fileName)
+					}
+					text := message.Text
+					search := text[1:]
+					if len(search) == 0 {
+						if _, err := Bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("打字好ㄇ")).Do(); err != nil {
+							log.Panic(err)
+						}
+						return
+					}
+					replyMsg := template(stocks, search, fileName)
 					if _, err := Bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(replyMsg)).Do(); err != nil {
 						log.Panic(err)
 					}
@@ -62,7 +90,7 @@ func LineEventHandler(c *gin.Context) {
 	}
 }
 
-func template(data []map[string]string, msg string) (result string) {
+func template(data []map[string]string, msg string, fileName string) (result string) {
 	var ret string
 
 	msg = strings.Trim(msg, " \n")
@@ -70,28 +98,39 @@ func template(data []map[string]string, msg string) (result string) {
 
 	switch msg {
 	case "help":
-		ret = "* /list：列出所有處置\n* /股票代碼 or /股票名稱：列出單支股票"
+		ret = "使用 '/' 查詢處置股票，'!' 查詢注意股票\n\n* /list：列出所有處置\n* (/ or !){股票代碼} or (/ or !){股票名稱}：列出單支股票\n\n範例：\n!台積電\n/2330"
 	case "list":
-		for i := 0; i < dataLen; i++ {
-			bgn := data[i]["begin"][0:10]
-			end := data[i]["end"][0:10]
-			ret += fmt.Sprintf("代號: %s, 名稱: %s, 處置期間: %s~%s\n",
-				data[i]["code"], data[i]["name"], bgn, end)
+		if fileName != "punishing_stocks.json" {
+			ret = "注意股票字太多了，清單會爆"
+		} else {
+			for i := 0; i < dataLen; i++ {
+				bgn := data[i]["begin"][0:10]
+				end := data[i]["end"][0:10]
+				ret += fmt.Sprintf("代號: %s, 名稱: %s, 處置期間: %s~%s\n",
+					data[i]["code"][1:], data[i]["name"], bgn, end)
+			}
+			ret = ret[:len(ret)-1]
 		}
-		ret = ret[:len(ret)-1]
 	default:
 		validCode := regexp.MustCompile(`^\d{4,}$`)
 		searchKey := "name"
 		if validCode.MatchString(msg) {
 			searchKey = "code"
+			msg = "'" + msg
 		}
 
 		for i := 0; i < dataLen; i++ {
+			fmt.Println(data[i][searchKey], msg)
 			if data[i][searchKey] == msg {
-				bgn := data[i]["begin"][0:10]
-				end := data[i]["end"][0:10]
-				ret += fmt.Sprintf("代號: %s, 名稱: %s, 處置期間: %s~%s\n",
-					data[i]["code"], data[i]["name"], bgn, end)
+				if fileName != "punishing_stocks.json" {
+					ret += fmt.Sprintf("-----\n代號: %s\n名稱: %s\n理由: %s\n,宣布日期: %s\n",
+						data[i]["code"][1:], data[i]["name"], data[i]["desc"], data[i]["announce_date"])
+				} else {
+					bgn := data[i]["begin"][0:10]
+					end := data[i]["end"][0:10]
+					ret += fmt.Sprintf("代號: %s, 名稱: %s, 處置期間: %s~%s\n",
+						data[i]["code"][1:], data[i]["name"], bgn, end)
+				}
 			}
 		}
 	}
