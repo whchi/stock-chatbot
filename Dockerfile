@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY . /app
 
+RUN rm -rf bin/*
 RUN go build -o bin/crawler cmd/crawler/main.go
 RUN go build -o bin/webapp cmd/line/main.go
 

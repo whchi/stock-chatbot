@@ -143,7 +143,6 @@ func template(data []map[string]string, msg string, fileName string) (result str
 			msg = "'" + msg
 		}
 		for i := 0; i < dataLen; i++ {
-			fmt.Println(data[i][searchKey], msg)
 			if data[i][searchKey] == msg {
 				if fileName != "punishing_stocks.json" {
 					ret += fmt.Sprintf("-----\n代號: %s\n名稱: %s\n理由: %s\n,宣布日期: %s\n",
