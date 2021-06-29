@@ -44,6 +44,33 @@ func LineEventHandler(c *gin.Context) {
 							log.Panic(err)
 						}
 						return
+<<<<<<< HEAD
+=======
+					}
+					replyMsg := template(stocks, search, fileName)
+					if replyMsg == "" {
+						replyMsg = "查無結果"
+>>>>>>> 1d364899a0b07ef7627144b6869dee63d00b9ccc
+					}
+					replyMsg := template(stocks, search, fileName)
+					if _, err := Bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(replyMsg)).Do(); err != nil {
+						log.Panic(err)
+					}
+				} else if strings.HasPrefix(message.Text, "!") {
+					fileName := "notice_stocks.json"
+					if !cache.IsExpired(fileName) {
+						stocks = cache.GetStocks(fileName)
+					} else {
+						stocks = gsheet.FetchData()
+						cache.SyncWithRaw(stocks, fileName)
+					}
+					text := message.Text
+					search := text[1:]
+					if len(search) == 0 {
+						if _, err := Bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage("打字好ㄇ")).Do(); err != nil {
+							log.Panic(err)
+						}
+						return
 					}
 					replyMsg := template(stocks, search, fileName)
 					if _, err := Bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(replyMsg)).Do(); err != nil {
@@ -116,6 +143,7 @@ func template(data []map[string]string, msg string, fileName string) (result str
 			msg = "'" + msg
 		}
 		for i := 0; i < dataLen; i++ {
+			fmt.Println(data[i][searchKey], msg)
 			if data[i][searchKey] == msg {
 				if fileName != "punishing_stocks.json" {
 					ret += fmt.Sprintf("-----\n代號: %s\n名稱: %s\n理由: %s\n,宣布日期: %s\n",
