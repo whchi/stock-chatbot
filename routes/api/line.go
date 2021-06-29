@@ -44,13 +44,6 @@ func LineEventHandler(c *gin.Context) {
 							log.Panic(err)
 						}
 						return
-<<<<<<< HEAD
-=======
-					}
-					replyMsg := template(stocks, search, fileName)
-					if replyMsg == "" {
-						replyMsg = "查無結果"
->>>>>>> 1d364899a0b07ef7627144b6869dee63d00b9ccc
 					}
 					replyMsg := template(stocks, search, fileName)
 					if _, err := Bot.ReplyMessage(event.ReplyToken, linebot.NewTextMessage(replyMsg)).Do(); err != nil {
