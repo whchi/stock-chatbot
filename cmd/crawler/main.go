@@ -40,11 +40,10 @@ func main() {
 func processPunish() {
 	fileName := "punishing_stocks"
 	// process listed
-	url := setting.OtherSetting.GSHEET_API_URL + "?tab=" + fileName
 	rows, total := getListed("punish")
 	var listed []map[string]string
 	if total > 0 {
-		listed := make([]map[string]string, total)
+		listed = make([]map[string]string, total)
 		for i := range listed {
 			listed[i] = make(map[string]string, 7)
 		}
@@ -57,8 +56,8 @@ func processPunish() {
 			listed[i]["begin"] = convertToEra(interval[0], "/") + "T00:00:00+08:00"
 			listed[i]["end"] = convertToEra(interval[1], "/") + "T23:59:59+08:00"
 		}
+		fmt.Println(listed)
 	}
-
 	// process otc
 	var otc []map[string]string
 	doc, recordLen := getOTC(fileName)
@@ -104,8 +103,9 @@ func processPunish() {
 			otc[i]["end"] = end
 		})
 	}
-
+	fmt.Println(listed, otc)
 	toDb := append(listed, otc...)
+	url := setting.OtherSetting.GSHEET_API_URL + "?tab=" + fileName
 	if len(toDb) > 0 {
 		save(url, toDb, fileName+".json")
 		log.Print(fileName + " sheet data updated")
@@ -203,11 +203,8 @@ func convertToEra(old string, sep string) (new string) {
 	return strconv.Itoa(yr) + "-" + parsed[1] + "-" + parsed[2]
 }
 func getListed(stockType string) (results [][]string, count int) {
-	t := time.Now()
-	startDate := t.Format("20060102")
-	endDate := t.AddDate(0, 0, 1).Format("20060102")
 	ts := strconv.Itoa(int(time.Now().Unix()))
-	url := fmt.Sprintf("https://www.twse.com.tw/announcement/%s?response=json&startDate=%s&endDate=%s&radioType=false&_=%s", stockType, startDate, endDate, ts)
+	url := fmt.Sprintf("https://www.twse.com.tw/announcement/%s?response=json&startDate=&endDate=&radioType=false&_=%s", stockType, ts)
 
 	resBody := Fetch(url)
 	body, err := ioutil.ReadAll(resBody)
@@ -225,7 +222,6 @@ func getListed(stockType string) (results [][]string, count int) {
 	for i := range rows {
 		rows[i] = make([]string, 6)
 	}
-
 	if v, ok := listedData["data"].([]interface{}); ok {
 		for idx, row := range v {
 			j := 0
