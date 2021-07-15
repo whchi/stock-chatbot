@@ -23,6 +23,8 @@ go mod tidy
 ```sh
 go run cmd/crawler/main.go
 ```
-📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉
+📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉
+
 ![](http://shachiku.life/extra/stock-chatbot.png)
-📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈
+
+📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈📉📈
